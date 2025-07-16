@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Temperature Sensor</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        .alert { color: red; font-weight: bold; }
+        .temperature { font-size: 24px; }
+    </style>
+</head>
+<body>
+    <h1>Smart Temperature Sensor</h1>
+    <div>
+        <h2>Current Temperature: <span id="temperature">Loading...</span> °C</h2>
+        <div id="alert" class="alert" style="display: none;">Temperature exceeds threshold!</div>
+    </div>
+
+    <script>
+        const temperatureElement = document.getElementById('temperature');
+        const alertElement = document.getElementById('alert');
+
+        // Function to fetch temperature data from Adafruit IO
+        async function fetchTemperature() {
+            const response = await fetch('https://io.adafruit.com/api/v2/cledd/feeds/temperature/data/last?X-AIO-Key=aio_cmWB459imyK9Sz55WXKLn8Zka3Sc');
+            const data = await response.json();
+            const temperature = data.value;
+
+            temperatureElement.textContent = temperature;
+
+            // Check if temperature exceeds threshold
+            if (parseFloat(temperature) > 30.0) { // Set your threshold
+                alertElement.style.display = 'block';
+            } else {
+                alertElement.style.display = 'none';
+            }
+        }
+
+        // Fetch temperature data every 5 seconds
+        setInterval(fetchTemperature, 5000);
+        fetchTemperature(); // Initial fetch
+    </script>
+</body>
+</html>
